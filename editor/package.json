@@ -30,6 +30,11 @@
     "codemirror6-formula-vue3",
     "codemirror6-js-formula"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gkf442573575/formula-editor-vue3.git"
+  },
+  "homepage": "https://github.com/gkf442573575/formula-editor-vue3#readme",
   "scripts": {
     "dev": "vite build --watch",
     "build": "vue-tsc --noEmit && vite build"
