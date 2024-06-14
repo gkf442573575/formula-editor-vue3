@@ -30,6 +30,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm build:lib
+      - run: cp README.md editor/ && cp LICENSE editor/
 
       - name: Publish package to NPM 📦
         run: cd editor/ && npm publish

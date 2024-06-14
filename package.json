@@ -1,8 +1,8 @@
 {
   "name": "formula-editor-repo",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
-  "description": "",
+  "description": "codemirror formula editor for vue3",
   "scripts": {
     "dev": "concurrently \"pnpm run dev:lib\" \"pnpm run dev:example\"",
     "dev:lib": "pnpm -C editor dev",
@@ -12,9 +12,17 @@
     "bump": "bumpp package.json editor/package.json",
     "bump:example": "bumpp example/package.json --tag example- --commit example-"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "formula",
+    "formula-vue3",
+    "formula-editor",
+    "codemirror-formula",
+    "codemirror-formula-vue3",
+    "codemirror6-formula-vue3",
+    "codemirror6-js-formula"
+  ],
+  "author": "gkf442573575@163.com",
+  "license": "MIT",
   "devDependencies": {
     "bumpp": "^9.4.1",
     "concurrently": "^8.2.2"
