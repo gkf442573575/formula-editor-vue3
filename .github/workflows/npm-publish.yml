@@ -32,6 +32,6 @@ jobs:
       - run: pnpm build:lib
 
       - name: Publish package to NPM 📦
-        run: cd packages/ && npm publish
+        run: cd editor/ && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
