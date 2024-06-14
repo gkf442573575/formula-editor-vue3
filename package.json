@@ -1,6 +1,6 @@
 {
   "name": "formula-editor-repo",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "description": "",
   "scripts": {
@@ -8,7 +8,7 @@
     "dev:lib": "pnpm -C editor dev",
     "dev:example": "pnpm -C example dev",
     "build:lib": "pnpm -C editor build",
-    "build:example": "pnpm -C example build",
+    "build:example": "pnpm run build:lib && pnpm -C example build",
     "bump": "bumpp package.json editor/package.json",
     "bump:example": "bumpp example/package.json --tag example- --commit example-"
   },
