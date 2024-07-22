@@ -67,7 +67,7 @@ export const isCloseBrackets = (content: string) => {
  */
 export const evalFormula = (
   formula: string,
-  variableHandler: (text: any) => string,
+  variableHandler: (variable: any) => string,
   formulaSope: { [key: string]: any }
 ) => {
   const isPass = isCloseBrackets(formula)
