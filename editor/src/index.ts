@@ -3,8 +3,7 @@ import './view/index.scss'
 
 import Editor from './view/index.vue'
 
-import { FORMULA_MATHS } from './utils/math'
-window.FORMULA_MATHS = FORMULA_MATHS
+export { FORMULA_MATHS } from './utils/math'
 
 export * from './interfaces'
 
