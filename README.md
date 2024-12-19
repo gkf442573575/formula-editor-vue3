@@ -109,7 +109,6 @@ app.mount('#app')
     v-model="customCode"
     :title="'自定义计算MATHS'"
     :variables="customVariables"
-    :is-dark="isDark"
     :math-list="customMathList"
   >
     <template #variable="{ insert }">
