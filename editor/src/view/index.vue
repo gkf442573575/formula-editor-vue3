@@ -20,35 +20,39 @@
       />
     </div>
     <div class="formula-params">
-      <!--变量-->
-      <ul class="formula-params-variable formula-params-list">
-        <li
-          class="variable-item formula-params-item"
-          v-for="item in variables"
-          :key="item.value"
-          @click="insertVariables(item)"
-        >
-          <span class="variable-item-label">{{ item.label }}</span>
-          <span class="variable-item-desc" v-show="item.desc">{{ item.desc }}</span>
-        </li>
-      </ul>
-      <!--数学方法-->
-      <ul class="formula-params-maths formula-params-list">
-        <li
-          class="maths-item formula-params-item"
-          v-for="item in MATH_LIST"
-          :key="item"
-          @click="insertMaths(item)"
-          @mouseenter="activeMath = item"
-        >
-          {{ item }}
-        </li>
-      </ul>
-      <div class="formula-maths-desc formula-params-list">
-        <p class="math-desc">{{ MATH_DESC_LIST[activeMath].desc }}</p>
-        <p class="math-usage">用法：{{ MATH_DESC_LIST[activeMath].usage }}</p>
-        <p class="math-example">示例：{{ MATH_DESC_LIST[activeMath].example }}</p>
-      </div>
+      <!--变量 variables -->
+      <slot name="variable" :insert="insertVariables">
+        <ul class="formula-params-variable formula-params-list">
+          <li
+            class="variable-item formula-params-item"
+            v-for="item in variables"
+            :key="item.value"
+            @click="insertVariables(item.value)"
+          >
+            <span class="variable-item-label">{{ item.label }}</span>
+            <span class="variable-item-desc" v-if="item.desc">{{ item.desc }}</span>
+          </li>
+        </ul>
+      </slot>
+      <!--数学方法 maths-->
+      <slot name="math" :insert="insertMaths">
+        <ul class="formula-params-maths formula-params-list">
+          <li
+            class="maths-item formula-params-item"
+            v-for="item in mathList"
+            :key="item.name"
+            @click="insertMaths(item.name)"
+            @mouseenter="activeMath = item"
+          >
+            {{ item.name }}
+          </li>
+        </ul>
+        <div class="formula-maths-desc formula-params-list" v-if="activeMath">
+          <p class="math-desc" v-if="activeMath.desc">{{ activeMath.desc }}</p>
+          <p class="math-usage" v-if="activeMath.usage">用法：{{ activeMath.usage }}</p>
+          <p class="math-example" v-if="activeMath.example">示例：{{ activeMath.example }}</p>
+        </div>
+      </slot>
     </div>
   </div>
 </template>
@@ -71,11 +75,11 @@ import { Codemirror } from 'vue-codemirror'
 import { shallowRef, ref, computed, watch, type PropType } from 'vue'
 
 import { createMathPlaceholder } from '../utils/placeholder'
-import { MATH_LIST, MATH_DESC_LIST, MATH_REG, type MathName } from '../utils/math'
+import { FORMULA_MATHS } from '../utils/math'
 
 import { uuid } from '../utils/index'
 import { VARIABLE_REG } from '../utils/formula'
-import type { VariableItem } from '../interfaces'
+import type { MathItem, VariableItem } from '../interfaces'
 
 const props = defineProps({
   title: {
@@ -90,10 +94,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  variables: {
-    type: Array as PropType<VariableItem[]>,
-    default: () => []
-  },
   height: {
     type: Number,
     default: 200
@@ -101,8 +101,23 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: ''
+  },
+  // 变量列表
+  variables: {
+    type: Array as PropType<VariableItem[]>,
+    default: () => []
+  },
+  // 支持的math方法
+  mathList: {
+    type: Array as PropType<MathItem[]>,
+    default: () => FORMULA_MATHS
   }
 })
+
+defineSlots<{
+  math(props: { insert: (mathName: string) => void }): any
+  variable(props: { insert: (varName: string) => void }): any
+}>()
 
 const refreshKey = uuid()
 const refreshNum = ref(0)
@@ -115,7 +130,15 @@ const value = defineModel({ default: '' })
 // 当前editor值
 const editor = shallowRef<EditorView>()
 // 当前聚焦的math
-const activeMath = ref<MathName>('ABS')
+const activeMath = ref<MathItem>(props.mathList[0])
+
+const mathNames = computed(() => {
+  return props.mathList.map(item => item.name)
+})
+
+const MATH_REG = computed(() => {
+  return new RegExp(`${mathNames.value.join('|')}`, 'g')
+})
 
 // 变量高亮
 const variablePlaceholder = createMathPlaceholder(
@@ -130,7 +153,7 @@ const variablePlaceholder = createMathPlaceholder(
 
 // 函数高亮
 const mathsPlaceholder = createMathPlaceholder(
-  MATH_REG,
+  MATH_REG.value,
   match => {
     return match[0]
   },
@@ -138,9 +161,9 @@ const mathsPlaceholder = createMathPlaceholder(
 )
 
 // 函数的自动提示
-const mathsCompletions: Completion[] = MATH_LIST.map(item => {
+const mathsCompletions: Completion[] = props.mathList.map(item => {
   return {
-    label: item,
+    label: item.name,
     type: 'keyword',
     apply: (view: EditorView, completion: Completion, from: number, to: number) => {
       view.dispatch({
@@ -217,13 +240,13 @@ const insertText = (text: string, template: (text: string) => string, isFunc = f
 }
 
 // 插入变量
-const insertVariables = (item: VariableItem) => {
-  insertText(item.value, text => '${' + text + '}')
+const insertVariables = (varName: string) => {
+  insertText(varName, text => '${' + text + '}')
 }
 
 // 插入math方法
-const insertMaths = (name: MathName) => {
-  insertText(name, name => `${name}()`, true)
+const insertMaths = (mathName: string) => {
+  insertText(mathName, name => `${name}()`, true)
 }
 
 const handleReady = (payload: {
@@ -245,6 +268,11 @@ watch(
     immediate: true
   }
 )
+
+defineExpose({
+  insertMaths,
+  insertVariables
+})
 
 defineOptions({
   name: 'FormulaEditor'

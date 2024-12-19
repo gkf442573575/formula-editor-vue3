@@ -1,4 +1,6 @@
-import { MATH_REG } from './math'
+import { type MathItem } from '../interfaces'
+
+import { FORMULA_MATHS } from './math'
 import { uuid } from './index'
 
 const isStrBrackets = (val: string) => /[\'\"]{1}/.test(val)
@@ -63,28 +65,38 @@ export const isCloseBrackets = (content: string) => {
  * @param formula 公式内容
  * @param variableHandler 变量处理, 用来取变量所在formulaSope中的值 返回示例 ['id']['d'][0] 则取formulaSope['id']['d'][0]的值
  * @param formulaSope 必填，变量处理通过链的方式取出参数
+ * @param formulaMaths 非必填，函数处理
  * @returns
  */
 export const evalFormula = (
   formula: string,
   variableHandler: (variable: any) => string,
-  formulaSope: { [key: string]: any }
+  variableData: Record<string, any>,
+  mathList: MathItem[] = FORMULA_MATHS
 ) => {
   const isPass = isCloseBrackets(formula)
   if (!isPass) {
     throw new Error('括号不匹配')
   }
-
+  const formulaMaths: Record<string, (...arg: any[]) => any> = {}
+  const nameList: string[] = mathList.map(item => {
+    const { name, handler } = item
+    formulaMaths[name] = handler
+    return name
+  })
+  // 函数正则
+  const MATH_REG = new RegExp(`${nameList.join('|')}`, 'g')
   try {
-    // FIXME: 执行一个随机变量后，就能正确访问变量啦
-    console.log(formulaSope && formulaSope[uuid()])
+    // 执行一次随机变量才可访问
+    const mock_variable = variableData && variableData[uuid()]
+    const mock_math = formulaMaths && formulaMaths[uuid()]
     // 处理变量
     let evalFormula = formula.replace(VARIABLE_REG, (match, p1) => {
-      return 'formulaSope' + variableHandler(p1)
+      return 'variableData' + variableHandler(p1)
     })
     // 处理函数
     evalFormula = evalFormula.replace(MATH_REG, match => {
-      return `FORMULA_MATHS['${match}']`
+      return `formulaMaths['${match}']`
     })
     const result = eval(evalFormula)
     return result
