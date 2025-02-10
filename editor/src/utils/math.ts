@@ -1,6 +1,6 @@
 import type { MathItem } from '../interfaces'
 
-import { mean, max, min, sum } from 'lodash'
+import { mean, max, min, sum } from 'lodash-es'
 
 /**
  * @desc 进行公式计算的方法

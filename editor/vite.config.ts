@@ -24,7 +24,7 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'vue',
-        'lodash',
+        'lodash-es',
         'codemirror',
         '@codemirror/state',
         '@codemirror/view',

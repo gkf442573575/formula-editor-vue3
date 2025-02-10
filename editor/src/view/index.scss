@@ -8,15 +8,15 @@
   --formula-editor-desc: #67c23a;
 }
 
-* {
-  box-sizing: border-box;
-  -ms-overflow-style: none;
-  overflow: -moz-scrollbars-none;
-  margin: 0;
-  padding: 0;
-}
-
 .formula-editor {
+  * {
+    box-sizing: border-box;
+    -ms-overflow-style: none;
+    overflow: -moz-scrollbars-none;
+    margin: 0;
+    padding: 0;
+  }
+
   & &-title {
     height: 30px;
     padding: 0 15px;

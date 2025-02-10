@@ -1,4 +1,6 @@
 /// <reference types="vite/client" />
+import { MathItem } from './src/interfaces'
+
 declare interface Window {
-  FORMULA_MATHS: any
+  FORMULA_MATHS: MathItem[]
 }
