@@ -1,6 +1,6 @@
 {
   "name": "formula-editor-vue3",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "codemirror formula editor for vue3",
   "author": "gkf442573575@163.com",
   "type": "module",
